@@ -918,7 +918,7 @@ lines.forEach(line => {
 
 const content = document.getElementById("content");
 const searchInput = document.getElementById("search");
-  <!-- 既存script内の searchInput の下に追加 -->
+// searchInput の下に追加
 
 const typeFilter = document.getElementById("typeFilter");
 const showUncheckedOnly =
@@ -972,18 +972,7 @@ function updateProgress() {
     `${progress}%`;
 }
   
-  let checked = 0;
 
-  items.forEach(item => {
-
-    const key =
-      `${item.point}-${item.name}`;
-
-    if (checkedItems[key]) {
-      checked++;
-    }
-
-  });
 
  
 /* render() を丸ごと置き換え */
