@@ -942,10 +942,12 @@ const section = document.createElement("div");
 
 section.innerHTML = `
   <details class="border rounded-2xl bg-slate-50 overflow-hidden" open>
+    
     <summary
       class="cursor-pointer list-none px-5 py-4 text-xl font-bold text-blue-600 flex justify-between items-center hover:bg-slate-100 transition"
     >
       <span>${point}</span>
+
       <span class="text-sm text-slate-500">
         ${filtered.length}件
       </span>
@@ -953,8 +955,11 @@ section.innerHTML = `
 
     <div class="p-4 border-t">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
         ${filtered.map(entry => `
-          <label class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition">
+          <label
+            class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition"
+          >
             <input
               type="checkbox"
               class="w-5 h-5"
@@ -971,8 +976,10 @@ section.innerHTML = `
             </span>
           </label>
         `).join("")}
+
       </div>
     </div>
+
   </details>
 `;
         ${filtered.map(entry => `
