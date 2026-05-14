@@ -938,69 +938,49 @@ function render() {
 
     if (filtered.length === 0) return;
 
-const section = document.createElement("div");
+    const section = document.createElement("div");
 
-section.innerHTML = `
-  <details class="border rounded-2xl bg-slate-50 overflow-hidden" open>
-    
-    <summary
-      class="cursor-pointer list-none px-5 py-4 text-xl font-bold text-blue-600 flex justify-between items-center hover:bg-slate-100 transition"
-    >
-      <span>${point}</span>
+    section.innerHTML = `
+      <details class="border rounded-2xl bg-slate-50 overflow-hidden" open>
 
-      <span class="text-sm text-slate-500">
-        ${filtered.length}件
-      </span>
-    </summary>
+        <summary
+          class="cursor-pointer list-none px-5 py-4 text-xl font-bold text-blue-600 flex justify-between items-center hover:bg-slate-100 transition"
+        >
+          <span>${point}</span>
 
-    <div class="p-4 border-t">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <span class="text-sm text-slate-500">
+            ${filtered.length}件
+          </span>
+        </summary>
 
-        ${filtered.map(entry => `
-          <label
-            class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition"
-          >
-            <input
-              type="checkbox"
-              class="w-5 h-5"
-              ${checkedItems[entry] ? "checked" : ""}
-              data-item="${entry}"
-            />
+        <div class="p-4 border-t">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-            <span class="${
-              checkedItems[entry]
-                ? "line-through text-slate-400"
-                : "text-slate-700"
-            }">
-              ${entry}
-            </span>
-          </label>
-        `).join("")}
+            ${filtered.map(entry => `
+              <label
+                class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition"
+              >
+                <input
+                  type="checkbox"
+                  class="w-5 h-5"
+                  ${checkedItems[entry] ? "checked" : ""}
+                  data-item="${entry}"
+                />
 
-      </div>
-    </div>
+                <span class="${
+                  checkedItems[entry]
+                    ? "line-through text-slate-400"
+                    : "text-slate-700"
+                }">
+                  ${entry}
+                </span>
+              </label>
+            `).join("")}
 
-  </details>
-`;
-        ${filtered.map(entry => `
-          <label class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition">
-            <input
-              type="checkbox"
-              class="w-5 h-5"
-              ${checkedItems[entry] ? "checked" : ""}
-              data-item="${entry}"
-            />
+          </div>
+        </div>
 
-            <span class="${
-              checkedItems[entry]
-                ? "line-through text-slate-400"
-                : "text-slate-700"
-            }">
-              ${entry}
-            </span>
-          </label>
-        `).join("")}
-      </div>
+      </details>
     `;
 
     content.appendChild(section);
