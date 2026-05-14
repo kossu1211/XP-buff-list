@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XPバフ獲得リスト</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-100 p-4">
+
+<div class="max-w-6xl mx-auto bg-white rounded-3xl shadow-xl p-6">
+  <h1 class="text-3xl font-bold mb-2">XPバフ獲得リスト</h1>
+
+  <p class="text-slate-600 mb-4">
+    チェック状態はブラウザに自動保存されます。
+  </p>
+
+  <div class="mb-6 space-y-4">
+    <input
+      id="search"
+      type="text"
+      placeholder="武器・盾・鎧・アクセ・ペットで検索"
+      class="w-full border rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+
+    <div class="bg-slate-100 rounded-2xl p-4">
+      <div class="flex justify-between text-sm font-medium mb-2">
+        <span>進捗</span>
+        <span id="progressText">0 / 0 (0%)</span>
+      </div>
+
+      <div class="w-full h-4 bg-white rounded-full overflow-hidden">
+        <div
+          id="progressBar"
+          class="h-4 bg-green-500 rounded-full transition-all duration-300"
+          style="width: 0%"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="content" class="space-y-6"></div>
+</div>
+
+<script>
+const rawData = `
+100pt
+武器No1 ぼくとう
+100pt
+武器No21 キリン
+100pt
+武器No38 ペロペロキャンディ
+100pt
+武器No39 エルダーワンド
+100pt
+武器No54 ドリルランス
+100pt
+武器No58 ヒーリングワンド
+100pt
+武器No82 ニンジン
+100pt
+武器No87 ほねつきニク
+100pt
+武器No100 スコップ
+100pt
+武器No132 パンプキンハンマー
+100pt
+武器No175 ソウルイーター
+100pt
+盾No183 かめのこうら
+100pt
+盾No204 きのこ
+100pt
+盾No214 ピラーシールド
+100pt
+盾No230 チェアーガード
+100pt
+盾No235 ラダーシールド
+100pt
+盾No267 グリモア
+100pt
+鎧No269 ナイトアーマー
+100pt
+鎧No295 スキンヘッド
+100pt
+鎧No309 ゲソドレス
+100pt
+鎧No322 ツインテール
+100pt
+鎧No324 ゴブリンアーマー
+100pt
+鎧No328 ボクサーパンツ
+100pt
+鎧No344 カボチャパンツ
+100pt
+アクセNo345 ビギナーズリング
+100pt
+アクセNo384 クラブリング
+100pt
+アクセNo386 ピヨピヨリング
+100pt
+アクセNo390 クローバーリング
+100pt
+ペットNo395 スライム
+100pt
+ペットNo419 エンジェルスライム
+100pt
+ペットNo464 サボティ
+100pt
+ペットNo470 チキンナイト
+100pt
+ペットNo471 スモウトリ
+100pt
+ペットNo485 ラディッシュナイト
+100pt
+ペットNo493 クレイジーキャット
+100pt
+ペットNo503 ゴーストナイト
+100pt
+ペットNo520 メニースライム
+100pt
+ペットNo547 メガスライム
+100pt
+ペットNo557 バケチョウ
+100pt
+ペットNo568 まおう
+250pt
+武器No28 フラワーハンマー
+250pt
+武器No40 むしとりあみ
+250pt
+武器No44 グリーンボウ
+250pt
+武器No52 ヒートナイフ
+250pt
+武器No57 れいとうサンマ
+250pt
+武器No153 ホーリーナイフ
+250pt
+武器No156 レイピア
+250pt
+武器No172 メダマボール
+250pt
+武器No174 ゴールドダイス
+250pt
+盾No186 ハチミツ
+250pt
+盾No197 イクラガード
+250pt
+盾No216 ボールガード
+250pt
+盾No227 トルネードシールド
+250pt
+盾No242 コットンシールド
+250pt
+盾No246 ブッシュシールド
+250pt
+盾No256 エナジーガード
+250pt
+鎧No271 ウィザードローブ
+250pt
+鎧No294 メイドコス
+250pt
+鎧No311 パラディンマント
+250pt
+鎧No339 アイドルドレス
+250pt
+アクセNo351 スライムリング
+250pt
+アクセNo370 バイタリング
+250pt
+アクセNo377 ハートリング
+250pt
+アクセNo383 ボンバーリング
+250pt
+アクセNo386 ピヨピヨリング
+250pt
+ペットNo393 ギョッピィ
+250pt
+ペットNo394 リーフィ
+250pt
+ペットNo406 ジラフィ
+250pt
+ペットNo442 アント
+250pt
+ペットNo446 ブルーアイ
+250pt
+ペットNo469 ダディベア
+250pt
+ペットNo479 ゴブリンファイター
+250pt
+ペットNo522 スライムゲス
+250pt
+ペットNo544 クリオネイア
+250pt
+ペットNo566 サタン
+250pt
+ペットNo568 まおう
+500pt
+武器No49 スタンドマイク
+500pt
+武器No85 バトルフラッグ
+500pt
+武器No88 クマちゃんハンマー
+500pt
+武器No130 キノコハンマー
+500pt
+盾No180 グミボール
+500pt
+盾No194 ランバーシールド
+500pt
+盾No208 ボーンシールド
+500pt
+盾No220 プニプニシールド
+500pt
+盾No231 タマゴ
+500pt
+鎧No303 モンクパンツ
+500pt
+鎧No315 エプロン
+500pt
+鎧No333 えぼし
+500pt
+アクセNo374 ブラッドリング
+500pt
+アクセNo381 スカルリング
+500pt
+アクセNo382 クラウンリング
+500pt
+アクセNo385 フラワーリング
+500pt
+ペットNo399 ヒートスライム
+500pt
+ペットNo416 マンイーター
+500pt
+ペットNo420 スネイルスライム
+500pt
+ペットNo431 スケルトン
+500pt
+ペットNo438 ゴブリンモンク
+500pt
+ペットNo458 コーラルナイト
+500pt
+ペットNo464 サボティ
+500pt
+ペットNo529 アースワーム
+500pt
+ペットNo542 オクトポッド
+500pt
+ペットNo568 まおう
+1000pt
+武器No5 スピア
+1000pt
+武器No8 ウッドボウ
+1000pt
+武器No32 ホーリーボウ
+1000pt
+武器No70 えんぴつ
+1000pt
+武器No114 ブロードソード
+1000pt
+武器No128 スライムバスター
+1000pt
+武器No169 トラッキングボウ
+1000pt
+武器No174 ゴールドダイス
+1000pt
+盾No210 グレイブストーン
+1000pt
+盾No249 ショートケーキ
+1000pt
+盾No253 ストーンシールド
+1000pt
+盾No254 ナットシールド
+1000pt
+盾No259 スライムガード
+1000pt
+盾No261 ゼリーシールド
+1000pt
+鎧No283 むぎわらぼうし
+1000pt
+鎧No298 アラビアンローブ
+1000pt
+鎧No304 ヘビーアーマー
+1000pt
+鎧No313 サムライアーマー
+1000pt
+鎧No317 ふんどし
+1000pt
+鎧No337 めいさいふく
+1000pt
+アクセNo361 ゴブリング
+1000pt
+ペットNo392 ツィギー
+1000pt
+ペットNo397 キラーサーペント
+1000pt
+ペットNo407 ラバーバニー
+1000pt
+ペットNo427 イビルプレート
+1000pt
+ペットNo433 ゾンビ
+1000pt
+ペットNo435 ゴブリンナイト
+1000pt
+ペットNo466 ドラゴンスネーク
+1000pt
+ペットNo483 メデューサ
+1000pt
+ペットNo485 ラディッシュナイト
+1000pt
+ペットNo508 ゴッドアイ
+1000pt
+ペットNo518 ラブスライム
+1000pt
+ペットNo534 ヴォルガヌス
+1000pt
+ペットNo561 ゴブリンビショップ
+1000pt
+ペットNo563 ムンク
+1000pt
+ペットNo568 まおう
+1500pt
+武器No16 かたな
+1500pt
+武器No17 ストーンボウ
+1500pt
+武器No34 エレキランス
+1500pt
+武器No59 アクアランス
+1500pt
+武器No63 ハサミ
+1500pt
+武器No65 ヒートランス
+1500pt
+武器No69 ほうちょう
+1500pt
+武器No92 リンコロ
+1500pt
+武器No98 ゲイボルグ
+1500pt
+武器No99 カオスボウ
+1500pt
+武器No102 しゃくじょう
+1500pt
+武器No109 クナイ
+1500pt
+武器No115 グリーンランス
+1500pt
+武器No122 ネギ
+1500pt
+武器No158 ハルバード
+1500pt
+武器No162 デストロイヤー
+1500pt
+盾No182 ガントレット
+1500pt
+盾No191 バナナ
+1500pt
+盾No223 クロックガード
+1500pt
+盾No238 さや
+1500pt
+鎧No274 パーティウェア
+1500pt
+鎧No283 むぎわらぼうし
+1500pt
+鎧No286 コックハット
+1500pt
+鎧No292 ドワーフアーマー
+1500pt
+鎧No300 ゾンビメイク
+1500pt
+鎧No323 ファイターアーマー
+1500pt
+ペットNo423 ゲレゲレ
+1500pt
+ペットNo428 タイラント
+1500pt
+ペットNo461 アンモン
+1500pt
+ペットNo475 ミノタウロス
+1500pt
+ペットNo506 ブライトエンジェル
+1500pt
+ペットNo509 マンドラゴラ
+1500pt
+ペットNo515 プラントドラゴン
+1500pt
+ペットNo520 メニースライム
+1500pt
+ペットNo540 ベノムスライム
+1500pt
+ペットNo552 メガマッシュ
+1500pt
+ペットNo568 まおう
+2500pt
+武器No7 スタッフ
+2500pt
+武器No71 カットラス
+2500pt
+武器No79 ゴブリンキラー
+2500pt
+武器No96 ホーリーロッド
+2500pt
+武器No103 ストーンアックス
+2500pt
+武器No133 たいまつ
+2500pt
+武器No147 バスターソード
+2500pt
+武器No156 レイピア
+2500pt
+武器No175 ソウルイーター
+2500pt
+盾No195 シードガード
+2500pt
+盾No229 サンガード
+2500pt
+盾No243 カオスシールド
+2500pt
+盾No257 ブロック
+2500pt
+鎧No272 タンクアーマー
+2500pt
+鎧No277 はっぱ
+2500pt
+鎧No289 カッパー
+2500pt
+鎧No293 しゅうじんふく
+2500pt
+鎧No294 メイドコス
+2500pt
+鎧No295 スキンヘッド
+2500pt
+鎧No332 サモナーローブ
+2500pt
+鎧No342 ホッケーマスク
+2500pt
+アクセNo345 ビギナーズリング
+2500pt
+アクセNo367 アームドリング
+2500pt
+アクセNo378 ウィングリング
+2500pt
+アクセNo387 ポイズンリング
+2500pt
+アクセNo391 シールドリング
+2500pt
+ペットNo396 ウィングアイ
+2500pt
+ペットNo410 ハングリードッグ
+2500pt
+ペットNo422 ポールスライム
+2500pt
+ペットNo455 サハギン
+2500pt
+ペットNo471 スモウトリ
+2500pt
+ペットNo481 ゴブリンロード
+2500pt
+ペットNo489 トサドッグ
+2500pt
+ペットNo545 スライムナイト
+2500pt
+ペットNo550 ポイズンマシュラ
+2500pt
+ペットNo556 カラカサ
+2500pt
+ペットNo560 ゴブリンクラウン
+2500pt
+ペットNo564 デーモン
+2500pt
+ペットNo567 ミニデビル
+2500pt
+ペットNo568 まおう
+3500pt
+武器No2 こんぼう
+3500pt
+武器No6 ウッドハンマー
+3500pt
+武器No41 アースブレイド
+3500pt
+武器No48 シャベル
+3500pt
+武器No60 アクアブレイド
+3500pt
+武器No83 エクスカリバー
+3500pt
+武器No92 リンコロ
+3500pt
+武器No105 リーフソード
+3500pt
+武器No116 ドラゴンテイル
+3500pt
+武器No117 フレイムタン
+3500pt
+武器No118 サンロッド
+3500pt
+武器No134 パラソル
+3500pt
+武器No145 ダークソード
+3500pt
+武器No150 シルバーアックス
+3500pt
+武器No172 メダマボール
+3500pt
+盾No181 ミラーシールド
+3500pt
+盾No187 スパイクシールド
+3500pt
+盾No190 うさちゃん
+3500pt
+盾No213 ライオットシールド
+3500pt
+盾No226 サボテンシールド
+3500pt
+盾No264 ムーンガード
+3500pt
+鎧No270 ブシドー
+3500pt
+鎧No271 ウィザードローブ
+3500pt
+鎧No285 アニマルパンツ
+3500pt
+鎧No314 パイレーツハット
+3500pt
+鎧No316 コンバットメット
+3500pt
+鎧No321 リボン
+3500pt
+アクセNo345 ビギナーズリング
+3500pt
+アクセNo352 フェザーリング
+3500pt
+アクセNo356 ホーリーリング
+3500pt
+アクセNo364 リザードリング
+3500pt
+アクセNo389 タイムリング
+3500pt
+ペットNo411 スタンピィ
+3500pt
+ペットNo413 シードアイ
+3500pt
+ペットNo418 マーダイン
+3500pt
+ペットNo447 レッドアイ
+3500pt
+ペットNo467 サボキング
+3500pt
+ペットNo468 マミィベア
+3500pt
+ペットNo496 シープマン
+3500pt
+ペットNo505 デビルマン
+3500pt
+ペットNo516 ドラゴンライダー
+3500pt
+ペットNo555 ベルゼブブ
+3500pt
+ペットNo568 まおう
+5000pt
+武器No2 こんぼう
+5000pt
+武器No18 スティンガー
+5000pt
+武器No89 ボール
+5000pt
+武器No103 ストーンアックス
+5000pt
+武器No120 チェンソー
+5000pt
+武器No122 ネギ
+5000pt
+武器No125 つりざお
+5000pt
+武器No129 ゲルダイス
+5000pt
+武器No144 クロウ
+5000pt
+武器No148 ドラゴンウィング
+5000pt
+盾No176 ナベのフタ
+5000pt
+盾No207 わらにんぎょう
+5000pt
+盾No215 アイアンシールド
+5000pt
+盾No229 サンガード
+5000pt
+盾No244 ホーリーガード
+5000pt
+盾No256 エナジーガード
+5000pt
+鎧No277 はっぱ
+5000pt
+鎧No293 しゅうじんふく
+5000pt
+鎧No305 たんけんふく
+5000pt
+鎧No312 ウィッチドレス
+5000pt
+鎧No321 リボン
+5000pt
+鎧No332 サモナーローブ
+5000pt
+アクセNo362 アニマルリング
+5000pt
+アクセNo376 スプリングリング
+5000pt
+ペットNo412 タニップ
+5000pt
+ペットNo414 パクパクフラワー
+5000pt
+ペットNo429 スカルバグ
+5000pt
+ペットNo486 ピーチメイジ
+5000pt
+ペットNo491 ライオネル
+5000pt
+ペットNo525 マミー
+5000pt
+ペットNo539 アシッドスライム
+5000pt
+ペットNo545 スライムナイト
+5000pt
+ペットNo568 まおう
+7500pt
+武器No49 スタンドマイク
+7500pt
+武器No85 バトルフラッグ
+7500pt
+武器No88 クマちゃんハンマー
+7500pt
+武器No130 キノコハンマー
+7500pt
+盾No180 グミボール
+7500pt
+盾No194 ランバーシールド
+7500pt
+盾No208 ボーンシールド
+7500pt
+盾No220 プニプニシールド
+7500pt
+盾No231 タマゴ
+7500pt
+鎧No303 モンクパンツ
+7500pt
+鎧No315 エプロン
+7500pt
+鎧No333 えぼし
+7500pt
+アクセNo374 ブラッドリング
+7500pt
+アクセNo381 スカルリング
+7500pt
+アクセNo382 クラウンリング
+7500pt
+アクセNo385 フラワーリング
+7500pt
+ペットNo399 ヒートスライム
+7500pt
+ペットNo416 マンイーター
+7500pt
+ペットNo420 スネイルスライム
+7500pt
+ペットNo431 スケルトン
+7500pt
+ペットNo438 ゴブリンモンク
+7500pt
+ペットNo458 コーラルナイト
+7500pt
+ペットNo464 サボティ
+7500pt
+ペットNo529 アースワーム
+7500pt
+ペットNo542 オクトポッド
+7500pt
+ペットNo568 まおう
+9999pt
+武器No1 ぼくとう
+9999pt
+武器No4 ロングソード
+9999pt
+武器No8 ウッドボウ
+9999pt
+武器No10 きのえだ
+9999pt
+武器No16 かたな
+9999pt
+武器No19 フライパン
+9999pt
+武器No24 ハブラシ
+9999pt
+武器No37 ちゅうしゃき
+9999pt
+武器No40 むしとりあみ
+9999pt
+武器No49 スタンドマイク
+9999pt
+武器No57 れいとうサンマ
+9999pt
+武器No70 えんぴつ
+9999pt
+武器No72 アイアンハンマー
+9999pt
+武器No73 フライドチキン
+9999pt
+武器No80 クロスボウ
+9999pt
+武器No82 ニンジン
+9999pt
+武器No87 ほねつきニク
+9999pt
+武器No100 スコップ
+9999pt
+武器No106 アマウェンボウ
+9999pt
+武器No110 イカサマダイス
+9999pt
+武器No111 ブラッドソード
+9999pt
+武器No124 ぼうつきグローブ
+9999pt
+武器No126 スライムブレイド
+9999pt
+武器No128 スライムバスター
+9999pt
+武器No132 パンプキンハンマー
+9999pt
+武器No133 たいまつ
+9999pt
+武器No141 カオスハンマー
+9999pt
+武器No146 ビッグソード
+9999pt
+武器No160 トロピカルランス
+9999pt
+盾No176 ナベのフタ
+9999pt
+盾No177 きのいた
+9999pt
+盾No188 ビッグドングリ
+9999pt
+盾No193 ブロンズシールド
+9999pt
+盾No195 シードガード
+9999pt
+盾No197 イクラガード
+9999pt
+盾No200 スネイルガード
+9999pt
+盾No212 ニク
+9999pt
+盾No222 キュウキュウガード
+9999pt
+盾No231 タマゴ
+9999pt
+盾No235 ラダーシールド
+9999pt
+盾No254 ナットシールド
+9999pt
+盾No255 サニタイザー
+9999pt
+盾No259 スライムガード
+9999pt
+盾No262 ビッグシールド
+9999pt
+盾No265 アンプシールド
+9999pt
+鎧No269 ナイトアーマー
+9999pt
+鎧No283 むぎわらぼうし
+9999pt
+鎧No286 コックハット
+9999pt
+鎧No297 モグメット
+9999pt
+鎧No307 サイボーグスーツ
+9999pt
+鎧No315 エプロン
+9999pt
+鎧No322 ツインテール
+9999pt
+鎧No324 ゴブリンアーマー
+9999pt
+鎧No326 みこふく
+9999pt
+鎧No331 ワイルドローブ
+9999pt
+鎧No332 サモナーローブ
+9999pt
+アクセNo345 ビギナーズリング
+9999pt
+アクセNo351 スライムリング
+9999pt
+アクセNo364 リザードリング
+9999pt
+アクセNo366 デビルリング
+9999pt
+アクセNo379 キャンドルリング
+9999pt
+アクセNo386 ピヨピヨリング
+9999pt
+アクセNo389 タイムリング
+9999pt
+ペットNo392 ツィギー
+9999pt
+ペットNo395 スライム
+9999pt
+ペットNo408 クソデッパ
+9999pt
+ペットNo410 ハングリードッグ
+9999pt
+ペットNo411 スタンピィ
+9999pt
+ペットNo416 マンイーター
+9999pt
+ペットNo422 ポールスライム
+9999pt
+ペットNo441 ワークスライム
+9999pt
+ペットNo442 アント
+9999pt
+ペットNo447 レッドアイ
+9999pt
+ペットNo454 ドクターフィッシュ
+9999pt
+ペットNo455 サハギン
+9999pt
+ペットNo461 アンモン
+9999pt
+ペットNo476 ドラゴン
+9999pt
+ペットNo481 ゴブリンロード
+9999pt
+ペットNo484 キャロットウォーリア
+9999pt
+ペットNo489 トサドッグ
+9999pt
+ペットNo492 トールベア
+9999pt
+ペットNo504 ペネム
+9999pt
+ペットNo511 グリフォン
+9999pt
+ペットNo515 プラントドラゴン
+9999pt
+ペットNo519 チェリースライム
+9999pt
+ペットNo539 アシッドスライム
+9999pt
+ペットNo543 ダゴン
+9999pt
+ペットNo547 メガスライム
+9999pt
+ペットNo551 ナゾノカジツ
+9999pt
+ペットNo552 メガマッシュ
+9999pt
+ペットNo559 キュウビ
+9999pt
+ペットNo562 ゴブリンキング
+9999pt
+ペットNo568 まおう
+`;
+
+const lines = rawData
+  .split("\n")
+  .map(line => line.trim())
+  .filter(Boolean);
+
+const grouped = {};
+let currentPoint = "";
+
+lines.forEach(line => {
+  if (line.includes("pt")) {
+    currentPoint = line;
+
+    if (!grouped[currentPoint]) {
+      grouped[currentPoint] = [];
+    }
+  } else {
+    grouped[currentPoint].push(line);
+  }
+});
+
+const content = document.getElementById("content");
+const searchInput = document.getElementById("search");
+
+let checkedItems = JSON.parse(
+  localStorage.getItem("xp-buff-checklist") || "{}"
+);
+
+function saveChecklist() {
+  localStorage.setItem(
+    "xp-buff-checklist",
+    JSON.stringify(checkedItems)
+  );
+}
+
+function updateProgress() {
+  const totalItems = Object.values(grouped)
+    .reduce((sum, arr) => sum + arr.length, 0);
+
+  const checkedCount = Object.values(checkedItems)
+    .filter(Boolean).length;
+
+  const progress = totalItems
+    ? Math.round((checkedCount / totalItems) * 100)
+    : 0;
+
+  document.getElementById("progressText").textContent =
+    `${checkedCount} / ${totalItems} (${progress}%)`;
+
+  document.getElementById("progressBar").style.width =
+    `${progress}%`;
+}
+
+function render() {
+  const search = searchInput.value.toLowerCase();
+
+  content.innerHTML = "";
+
+  Object.entries(grouped).forEach(([point, entries]) => {
+
+    const filtered = entries.filter(entry =>
+      entry.toLowerCase().includes(search)
+    );
+
+    if (filtered.length === 0) return;
+
+const section = document.createElement("div");
+
+section.innerHTML = `
+  <details class="border rounded-2xl bg-slate-50 overflow-hidden" open>
+    <summary
+      class="cursor-pointer list-none px-5 py-4 text-xl font-bold text-blue-600 flex justify-between items-center hover:bg-slate-100 transition"
+    >
+      <span>${point}</span>
+      <span class="text-sm text-slate-500">
+        ${filtered.length}件
+      </span>
+    </summary>
+
+    <div class="p-4 border-t">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        ${filtered.map(entry => `
+          <label class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition">
+            <input
+              type="checkbox"
+              class="w-5 h-5"
+              ${checkedItems[entry] ? "checked" : ""}
+              data-item="${entry}"
+            />
+
+            <span class="${
+              checkedItems[entry]
+                ? "line-through text-slate-400"
+                : "text-slate-700"
+            }">
+              ${entry}
+            </span>
+          </label>
+        `).join("")}
+      </div>
+    </div>
+  </details>
+`;
+        ${filtered.map(entry => `
+          <label class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition">
+            <input
+              type="checkbox"
+              class="w-5 h-5"
+              ${checkedItems[entry] ? "checked" : ""}
+              data-item="${entry}"
+            />
+
+            <span class="${
+              checkedItems[entry]
+                ? "line-through text-slate-400"
+                : "text-slate-700"
+            }">
+              ${entry}
+            </span>
+          </label>
+        `).join("")}
+      </div>
+    `;
+
+    content.appendChild(section);
+  });
+
+  document.querySelectorAll("input[type=checkbox]").forEach(box => {
+    box.addEventListener("change", (e) => {
+      const item = e.target.dataset.item;
+
+      checkedItems[item] = e.target.checked;
+
+      saveChecklist();
+      render();
+      updateProgress();
+    });
+  });
+
+  updateProgress();
+}
+
+searchInput.addEventListener("input", render);
+
+render();
+</script>
+
+</body>
+</html>
