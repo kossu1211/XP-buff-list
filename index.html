@@ -941,13 +941,38 @@ function saveChecklist() {
 }
 
 function updateProgress() {
+
   const totalItems = Object.values(grouped)
     .reduce((sum, arr) => sum + arr.length, 0);
 
- function updateProgress() {
+  let checkedCount = 0;
 
-  const total = items.length;
+  Object.entries(grouped).forEach(([point, entries]) => {
 
+    entries.forEach(entry => {
+
+      const key = `${point}-${entry}`;
+
+      if (checkedItems[key]) {
+        checkedCount++;
+      }
+
+    });
+
+  });
+
+  const progress = totalItems
+    ? Math.round((checkedCount / totalItems) * 100)
+    : 0;
+
+  document.getElementById("progressText").textContent =
+    `${checkedCount} / ${totalItems} (${progress}%)`;
+
+  document.getElementById("progressBar").style.width =
+    `${progress}%`;
+}
+
+  
   let checked = 0;
 
   items.forEach(item => {
