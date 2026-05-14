@@ -1129,7 +1129,27 @@ function render() {
                     : "text-slate-700"
                 }">
 
-                  ${entry}
+                  ${entry.replace(/^(武器|盾|鎧|アクセ|ペット)/, (type) => {
+  const badge = getTypeBadge(type);
+
+  return `
+    <span
+      style="
+        background:${badge.bg};
+        color:${badge.text};
+        padding:2px 8px;
+        border-radius:999px;
+        font-size:12px;
+        font-weight:700;
+        margin-right:8px;
+        display:inline-block;
+      "
+    >
+      ${type}
+    </span>
+  `;
+})}
+${entry.replace(/^(武器|盾|鎧|アクセ|ペット)/, "").trim()}
 
                 </span>
 
