@@ -1079,10 +1079,39 @@ function render() {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
             ${filtered.map(entry => `
+            const getTypeColor = (entry) => {
 
-              <label
-                class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition"
-              >
+  if (entry.startsWith("武器")) {
+    return "bg-red-50";
+  }
+
+  if (entry.startsWith("盾")) {
+    return "bg-blue-50";
+  }
+
+  if (entry.startsWith("鎧")) {
+    return "bg-green-50";
+  }
+
+  if (entry.startsWith("アクセ")) {
+    return "bg-yellow-50";
+  }
+
+  if (entry.startsWith("ペット")) {
+    return "bg-purple-50";
+  }
+
+  return "bg-white";
+};
+
+             <label
+  class="
+    flex items-center gap-3
+    ${getTypeColor(entry)}
+    rounded-xl p-3 shadow-sm
+    hover:shadow-md transition
+  "
+>
 
                 <input
                   type="checkbox"
