@@ -984,34 +984,32 @@ function render() {
   const uncheckedOnly = showUncheckedOnly.checked;
 
    // ← ここに追加
-const getTypeColor = (entry) => {
-
-  if (entry.startsWith("武器")) {
-    return "#fef2f2";
+ function getTypeColor(entry) {
+  if (entry.startsWith("武器")) return "#fee2e2";
+  if (entry.startsWith("盾")) return "#dbeafe";
+  if (entry.startsWith("鎧")) return "#dcfce7";
+  if (entry.startsWith("アクセ")) return "#fef9c3";
+  if (entry.startsWith("ペット")) return "#f3e8ff";
+  return "#f3f4f6";
+}
+   function getTypeBadge(type) {
+  switch (type) {
+    case "武器":
+      return { bg: "#fecaca", text: "#991b1b" };
+    case "盾":
+      return { bg: "#bfdbfe", text: "#1e40af" };
+    case "鎧":
+      return { bg: "#bbf7d0", text: "#166534" };
+    case "アクセ":
+      return { bg: "#fde68a", text: "#92400e" };
+    case "ペット":
+      return { bg: "#e9d5ff", text: "#6b21a8" };
+    default:
+      return { bg: "#e5e7eb", text: "#374151" };
   }
+}
 
-  if (entry.startsWith("盾")) {
-    return "#eff6ff";
-  }
-
-  if (entry.startsWith("鎧")) {
-    return "#f0fdf4";
-  }
-
-  if (entry.startsWith("アクセ")) {
-    return "#fefce8";
-  }
-
-  if (entry.startsWith("ペット")) {
-    return "#faf5ff";
-  }
-
-  return "#ffffff";
-};
-
-  content.innerHTML = "";
-
-  content.innerHTML = "";
+   content.innerHTML = "";
 
   Object.entries(grouped).forEach(([point, entries]) => {
 
